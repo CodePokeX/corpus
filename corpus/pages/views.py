@@ -35,11 +35,14 @@ def get_active_members():
     return members
 
 
-def get_alumni_count():
+def get_alumni():
     """Return number of executive members who were in earlier batches (alumni)."""
-    config = get_object_or_404(
-        ModuleConfiguration, module_name="teampage"
-    ).module_config
+    try:
+        config = ModuleConfiguration.objects.get(
+            module_name="teampage"
+        ).module_config
+    except ModuleConfiguration.DoesNotExist:
+        return None
 
     # Extract active batches (current members)
     active_reg_years = []
@@ -65,11 +68,17 @@ def index(request):
     # Get all societies to render on landing page Societies section
     societies = Society.objects.all()
     members = get_active_members()
+    alumnis = get_alumni()
     if members is None:
-        members_count = 0
+        members_count = None
     else:
         members_count = members.count()
-    alumni_count = get_alumni_count().count()
+
+    if alumnis is None:
+        alumni_count = None
+    else:
+        alumni_count = alumnis.count()
+
     events_count = get_event_count()
     return render(
         request,
