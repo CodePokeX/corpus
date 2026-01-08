@@ -96,7 +96,7 @@ def calendar_view(request):
 
     sig_legend.append({
         "name": "Inter_SIG ",
-        "color": "#2563eb"  # Blue
+        "color": "#000080"  # Blue
     })
 
     ctx = {
