@@ -36,6 +36,8 @@
     {% if fac.post.is_execom %}
         {% include "pages/profile_box.html" with user=fac.user post=fac.post.name linkedin=fac.linkedin website=fac.website %}
     {% endif %}
+    {% empty %}
+        <p class="empty-text">No faculty listed</p>
 {% endfor %}
 </div>
 
@@ -43,16 +45,39 @@
 <div class="flex-container">
 {% for member in ieee_core %}
     {% include "pages/profile_box.html" with user=member.user post=member.core.post.name linkedin=member.linkedin github=member.github hide_linkedin=member.hide_linkedin hide_github=member.hide_github profile_url=member.get_profile_url %}
+    {% empty %}
+        <p class="empty-text">No core members</p>
 {% endfor %}
 </div>
 
 </section>
 
-
 {% include "pages/sig_helper.html" with sig_id="CompSoc" sig_name="CompSoc" show_faculty=True core_list=compsoc_core member_list=compsoc_members %}
 {% include "pages/sig_helper.html" with sig_id="Diode" sig_name="Diode" show_faculty=True core_list=diode_core member_list=diode_members %}
 {% include "pages/sig_helper.html" with sig_id="Piston" sig_name="Piston" show_faculty=True core_list=piston_core member_list=piston_members %}
-{% include "pages/sig_helper.html" with sig_id="SAC" sig_name="SAC" show_faculty=True core_list=sac_core %}
+
+<section id="SAC" class="team-content">
+<h2 class="section-heading">SAC Faculty</h2>
+<div class="flex-container">
+{% for fac in faculty %}
+    {% if fac.post.is_sac %}
+        {% include "pages/profile_box.html" with user=fac.user post=fac.post.name linkedin=fac.linkedin website=fac.website %}
+    {% endif %}
+    {% empty %}
+        <p class="empty-text">No faculty listed</p>
+{% endfor %}
+</div>
+<h2 class="section-heading">SAC Core</h2>
+<div class="flex-container">        
+{% for member in sac_core %}
+    {% include "pages/profile_box.html" with user=member.user post=member.core.post.name linkedin=member.linkedin github=member.github hide_linkedin=member.hide_linkedin hide_github=member.hide_github profile_url=member.get_profile_url %}
+    {% empty %}
+        <p class="empty-text">No core members</p>
+{% endfor %}
+</div>
+</section>
+
+
 
 {% endblock %}
 

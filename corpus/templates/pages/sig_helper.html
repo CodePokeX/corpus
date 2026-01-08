@@ -1,19 +1,11 @@
 <section id="{{ sig_id }}" class="team-content">
-<!-- for faculty -->
-{% if show_faculty is not None %}
+
+{% if show_faculty %}
 <h2 class="section-heading">{{ sig_name }} Faculty</h2>
 <div class="flex-container">
     {% for fac in faculty %}
-        {% if sig_name == "SAC" %}
-        
-            {% if fac.post.is_sac %}
-                {% include "pages/profile_box.html" with user=fac.user post=fac.post.name linkedin=fac.linkedin website=fac.website %}
-            {% endif %}
-        {% else %}
-           
-            {% if fac.sig and fac.sig.name == sig_name %}
-                {% include "pages/profile_box.html" with user=fac.user post=fac.post.name linkedin=fac.linkedin website=fac.website %}
-            {% endif %}
+        {% if fac.sig and fac.sig.name == sig_name %}
+            {% include "pages/profile_box.html" with user=fac.user post=fac.post.name linkedin=fac.linkedin website=fac.website %}
         {% endif %}
     {% empty %}
         <p class="empty-text">No faculty listed</p>
@@ -21,9 +13,7 @@
 </div>
 {% endif %}
 
-<!-- for core members -->
-{% if core_list is not None %}
-
+{% if core_list %}
 <h2 class="section-heading">{{ sig_name }} Core</h2>
 <div class="flex-container">
     {% for member in core_list %}
@@ -34,14 +24,13 @@
 </div>
 {% endif %}
 
-<!-- for exec member -->
-{% if core_list is not None %}
+{% if member_list %}
 <h2 class="section-heading">{{ sig_name }} Members</h2>
 <div class="flex-container">
     {% for member in member_list %}
-        {% include "pages/profile_box.html" with user=member.user linkedin=member.linkedin github=member.github profile_url=member.get_profile_url hide_linkedin=member.hide_linkedin hide_github=member.hide_github %}
+        {% include "pages/profile_box.html" with user=member.user linkedin=member.linkedin github=member.github hide_linkedin=member.hide_linkedin hide_github=member.hide_github profile_url=member.get_profile_url %}
     {% empty %}
-        <p class="empty-text">No members yet</p>
+        <p class="empty-text">No members</p>
     {% endfor %}
 </div>
 {% endif %}
