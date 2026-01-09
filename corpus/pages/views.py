@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date,timedelta
 
 from accounts.models import ExecutiveMember
 from accounts.models import Faculty
@@ -11,6 +11,8 @@ from django.shortcuts import render
 from newsletter.models import Event
 
 from corpus.decorators import module_enabled
+
+from django.utils import timezone
 
 
 def get_active_members():
@@ -93,14 +95,13 @@ def sig(request, sig_name):
     sig_data = get_object_or_404(SIG, slug=sig_name)
     societies_linked_to_sig = sig_data.societies.all()
     alumnilogos_linked_to_sig = sig_data.alumni_logos.all()
-
-    current_year = date.today().year
-    events_current_year = sig_data.events.filter(
-        start_date__year=current_year
+    today = timezone.now().date()
+    past_year = today-timedelta(days=365)
+    events_past_year = sig_data.events.filter(
+        start_date__range=(past_year, today)
     ).order_by("start_date")
-
     number_of_members = get_active_members().filter(sig=sig_data).count()
-    number_of_events = events_current_year.count()
+    number_of_events = events_past_year.count()
 
     return render(
         request,
@@ -108,7 +109,7 @@ def sig(request, sig_name):
         {
             "sig": sig_data,
             "societies_linked_to_sig": societies_linked_to_sig,
-            "events": events_current_year,
+            "events": events_past_year,
             "alumni_logos": alumnilogos_linked_to_sig,
             "no_of_members": number_of_members,
             "no_of_events": number_of_events,
