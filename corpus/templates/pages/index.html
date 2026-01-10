@@ -162,7 +162,7 @@ Home
                 </svg>
             </div>
             <div class="stat-title">Members</div>
-            <div class="stat-value text-secondary">{{ members_count }}</div>
+            <div class="stat-value text-secondary">{% if members_count is None %}<div class="text-sm">No active members found! Check configuration!</div>{% else %}{{ members_count }}{% endif %}</div>
             <div class="stat-actions">
                 <a role="button" href="{% url 'team' %}" class="btn btn-sm btn-secondary">View Members</a>
             </div>
@@ -179,7 +179,7 @@ Home
                 </svg>
             </div>
             <div class="stat-title">Alumni</div>
-            <div class="stat-value text-primary">{{ alumni_count }}</div>
+            <div class="stat-value text-primary">{% if alumni_count is None %}<div class="text-sm">No alumni found! Check configuration!</div>{% else %}{{ alumni_count }}{% endif %}</div>
             <div class="stat-actions">
                 <a role="button" href="#" class="btn btn-sm btn-primary">View Alumni</a>
             </div>
