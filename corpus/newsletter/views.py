@@ -91,7 +91,13 @@ def calendar_view(request):
     next_month_date = last_of_month + timedelta(days=1)
     months = [{"value": i, "name": calendar.month_name[i]} for i in range(1, 13)]
     years = range(today.year - 5, today.year + 6)
-    sig_legend = SIG.objects.all().order_by("name").values("name", "color")
+    sig_legend = list(SIG.objects.all().order_by("name").values("name", "color"))
+
+    sig_legend.append({
+        "name": "Inter_SIG ",
+        "color": "#000080"  # Blue
+    })
+
     ctx = {
         "all_cells": all_cells,
         "month_name": calendar.month_name[month],
