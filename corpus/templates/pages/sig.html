@@ -156,9 +156,9 @@
   <div class="px-6 text-center mt-10 py-8 ">
     <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold  dark:text-white leading-tight">Societies</h2>
   </div>
-  <section class="hero min-h-[30vh] min-w-screen ">
+  <section class="hero min-h-[30vh] min-w-screen pb-12 sm:pb-16">
 
-    <div class="flex flex-col lg:flex-row gap-20 justify-between mx-auto items-center">
+    <div class="flex flex-col lg:flex-row gap-8 lg:gap-20 justify-between mx-auto items-center">
       {% for society in societies_linked_to_sig %}
       <a href="{{ society.url }}">
         {% if society.dark_image %}
