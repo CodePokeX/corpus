@@ -95,8 +95,8 @@ def calendar_view(request):
     sig_legend = list(SIG.objects.all().order_by("name").values("name", "color"))
 
     sig_legend.append({
-        "name": "Inter_SIG ",
-        "color": "#000080"  # Blue
+        "name": "InterSIG",
+        "color": "#000080"  
     })
 
     ctx = {
