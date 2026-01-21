@@ -75,11 +75,10 @@
                 <button type="submit" class="btn btn-primary btn-lg px-10">
                     Save Changes
                 </button>
-                <a href="{{ request.GET.next|default:request.META.HTTP_REFERER|default:'/' }}"
-                    class="btn btn-secondary btn-lg px-10">
-                        Cancel
+                <a href="{{ previous_url }}" class="btn btn-secondary btn-lg px-10">
+                    Cancel
                 </a>
-
+                <input type="hidden" name="next" value="{{ previous_url }}">
             </div>
         </form>
     </div>

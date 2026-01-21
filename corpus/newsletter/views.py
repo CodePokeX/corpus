@@ -17,6 +17,9 @@ from .models import Event
 from corpus.decorators import ensure_group_membership
 from corpus.decorators import module_enabled
 
+from django.urls import reverse
+from django.contrib import messages
+
 # Create your views here.
 def _daterange(start_date, end_date):
     for n in range(int((end_date - start_date).days) + 1):
@@ -207,10 +210,10 @@ def new_announcement(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Announcement created successfully")
-            return redirect("newsletter_home")
+            return redirect("newsletter_manage_announcements")
         else:
             messages.error(request, "Failed to create announcement")
-            return redirect("newsletter_home")
+            return redirect("newsletter_manage_announcements")
 
     form = EventForm()
     context = {"form": form}
@@ -222,6 +225,11 @@ def new_announcement(request):
 @ensure_group_membership(group_names=["newsletter_admin"])
 def edit_announcement(request, pk):
     event = get_object_or_404(Event, pk=pk)
+    previous_url = (
+        request.GET.get("next")
+        or request.META.get("HTTP_REFERER")
+        or reverse("newsletter_manage_announcements")
+    )
 
     if request.GET.get("archive") == "true":
         event.archive_event = True
@@ -237,10 +245,11 @@ def edit_announcement(request, pk):
 
     if request.method == "POST":
         form = EventForm(request.POST, request.FILES, instance=event)
+        previous_url = request.GET.get("next") or reverse("newsletter_manage_announcements")
         if form.is_valid():
             form.save()
             messages.success(request, "Announcement updated successfully")
-            return redirect(request.GET.get("next", "newsletter_manage_announcements"))
+            return redirect(request.POST.get("next") or previous_url)
 
     else:
         form = EventForm(instance=event)
@@ -248,7 +257,7 @@ def edit_announcement(request, pk):
     return render(
         request,
         "newsletter/edit_announcement.html",
-        {"form": form, "announcement": event},
+        {"form": form, "announcement": event, "previous_url" : previous_url},
     )
 
 
@@ -263,7 +272,7 @@ def toggle_announcement(request, pk):
     return redirect(
         request.GET.get("next")
         or request.POST.get("next")
-        or "newsletter_manage_announcements"
+        or "newsletter_archived_events"
     )
 
 @module_enabled(module_name="newsletter")
