@@ -33,14 +33,13 @@ def calendar_view(request):
         month = int(request.GET.get("month", today.month))
         if not (1 <= month <= 12):
             month = today.month
-        if year < 1900 or year > 9999:
+        if year < 1900 or year > today.year+100 :
             year = today.year
         first_of_month = date(year, month, 1)
     except (ValueError, TypeError):
         year = today.year
         month = today.month
         first_of_month = date(year, month, 1)
-
     last_of_month = date(year, month, calendar.monthrange(year, month)[1])
     cal = calendar.Calendar(firstweekday=6)
     raw_all_days = list(cal.itermonthdates(year, month))
@@ -48,8 +47,7 @@ def calendar_view(request):
     last_day_in_grid = raw_all_days[-1]
     events_qs = (
         Event.objects.filter(
-            Q(start_date__lte=last_day_in_grid) &
-            Q(end_date__gte=first_day_in_grid)
+            Q(start_date__lte=last_day_in_grid) & Q(end_date__gte=first_day_in_grid)
         )
         .prefetch_related("sigs")
         .order_by("start_date", "name")
@@ -66,7 +64,6 @@ def calendar_view(request):
             final_color = "#000080"
         else:
             final_color = primary_sig.color if primary_sig else "#6b7280"
-
         for d in _daterange(start_in_view, end_in_view):
             event_data = {
                 "id": e.id,
@@ -75,28 +72,32 @@ def calendar_view(request):
                 "page_link": e.page_link,
                 "sig_color": final_color,
                 "sigs_json": sigs_json,
-                "is_first_day_in_view": d == start_in_view,
-                "is_last_day_in_view": d == end_in_view,
-                "is_week_start": d.weekday() == 6,
-                "is_week_end": d.weekday() == 5,
             }
+            event_data["is_first_day_in_view"] = d == start_in_view
+            event_data["is_last_day_in_view"] = d == end_in_view
+            event_data["is_week_start"] = d.weekday() == 6  # Sunday
+            event_data["is_week_end"] = d.weekday() == 5  # Saturday
+
             day_events[d.isoformat()].append(event_data)
     all_cells = []
     for d in raw_all_days:
         iso = d.isoformat()
         events_for_day = sorted(day_events.get(iso, []), key=lambda x: x["id"])
-        all_cells.append({
-            "date": d,
-            "in_month": d.month == month,
-            "iso": iso,
-            "events": events_for_day,
-            "count": len(events_for_day),
-        })
+        all_cells.append(
+            {
+                "date": d,
+                "in_month": (d.month == month),
+                "iso": iso,
+                "events": events_for_day,
+                "count": len(events_for_day),
+            }
+        )
     prev_month_date = first_of_month - timedelta(days=1)
     next_month_date = last_of_month + timedelta(days=1)
     months = [{"value": i, "name": calendar.month_name[i]} for i in range(1, 13)]
     years = range(today.year - 5, today.year + 6)
     sig_legend = list(SIG.objects.all().order_by("name").values("name", "color"))
+
     sig_legend.append({
         "name": "InterSIG",
         "color": "#000080"  
@@ -116,9 +117,7 @@ def calendar_view(request):
         "years": years,
         "sig_legend": sig_legend,
     }
-
     return render(request, "newsletter/calendar.html", ctx)
-
 
 @module_enabled(module_name="newsletter")
 def archived_events_view(request):
