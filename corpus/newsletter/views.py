@@ -28,24 +28,20 @@ def _daterange(start_date, end_date):
 
 def calendar_view(request):
     today = timezone.localdate()
-    MIN_YEAR = 1900
-    MAX_YEAR = today.year+100
     try:
         year = int(request.GET.get("year", today.year))
         month = int(request.GET.get("month", today.month))
-    except (TypeError, ValueError):
+        if not (1 <= month <= 12):
+            month = today.month
+        if year < 1900 or year > 9999:
+            year = today.year
+        first_of_month = date(year, month, 1)
+    except (ValueError, TypeError):
         year = today.year
         month = today.month
+        first_of_month = date(year, month, 1)
 
-    if not (1 <= month <= 12):
-        month = today.month
-    if year < MIN_YEAR or year > MAX_YEAR:
-        year = today.year
-    
-    first_of_month = date(year, month, 1)
-    last_of_month = date(
-        year, month, calendar.monthrange(year, month)[1]
-    )
+    last_of_month = date(year, month, calendar.monthrange(year, month)[1])
     cal = calendar.Calendar(firstweekday=6)
     raw_all_days = list(cal.itermonthdates(year, month))
     first_day_in_grid = raw_all_days[0]
@@ -62,17 +58,17 @@ def calendar_view(request):
     for e in events_qs:
         start_in_view = max(e.start_date, first_day_in_grid)
         end_in_view = min(e.end_date, last_day_in_grid)
-
         primary_sig = e.sigs.first()
         sig_names = [sig.name for sig in e.sigs.all()]
         sigs_data = [{"name": sig.name, "color": sig.color} for sig in e.sigs.all()]
         sigs_json = json.dumps(sigs_data)
+        if len(sig_names) >= 2:
+            final_color = "#000080"
+        else:
+            final_color = primary_sig.color if primary_sig else "#6b7280"
 
-        final_color = "#000080" if len(sig_names) >= 2 else (
-            primary_sig.color if primary_sig else "#6b7280"
-        )
         for d in _daterange(start_in_view, end_in_view):
-            day_events[d.isoformat()].append({
+            event_data = {
                 "id": e.id,
                 "name": e.name,
                 "description": e.description or "",
@@ -83,7 +79,8 @@ def calendar_view(request):
                 "is_last_day_in_view": d == end_in_view,
                 "is_week_start": d.weekday() == 6,
                 "is_week_end": d.weekday() == 5,
-            })
+            }
+            day_events[d.isoformat()].append(event_data)
     all_cells = []
     for d in raw_all_days:
         iso = d.isoformat()
@@ -97,6 +94,14 @@ def calendar_view(request):
         })
     prev_month_date = first_of_month - timedelta(days=1)
     next_month_date = last_of_month + timedelta(days=1)
+    months = [{"value": i, "name": calendar.month_name[i]} for i in range(1, 13)]
+    years = range(today.year - 5, today.year + 6)
+    sig_legend = list(SIG.objects.all().order_by("name").values("name", "color"))
+    sig_legend.append({
+        "name": "InterSIG",
+        "color": "#000080"  
+    })
+
     ctx = {
         "all_cells": all_cells,
         "month_name": calendar.month_name[month],
@@ -107,11 +112,9 @@ def calendar_view(request):
         "next_year": next_month_date.year,
         "next_month": next_month_date.month,
         "today": today,
-        "months": [{"value": i, "name": calendar.month_name[i]} for i in range(1, 13)],
-        "years": range(today.year - 5, today.year + 6),
-        "sig_legend": list(SIG.objects.all().order_by("name").values("name", "color")) + [
-            {"name": "InterSIG", "color": "#000080"}
-        ],
+        "months": months,
+        "years": years,
+        "sig_legend": sig_legend,
     }
 
     return render(request, "newsletter/calendar.html", ctx)
