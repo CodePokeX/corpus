@@ -33,6 +33,10 @@ def calendar_view(request):
         month = int(request.GET.get("month", today.month))
         if not (1 <= month <= 12):
             month = today.month
+            messages.error(request, "Month out of range")
+        if year < 1900 or year > today.year+100 :
+            year = today.year
+            messages.error(request, "Year out of range")
         first_of_month = date(year, month, 1)
     except (ValueError, TypeError):
         year = today.year
