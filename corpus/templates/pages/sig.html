@@ -65,12 +65,12 @@
     <div class="marquee-container overflow-hidden whitespace-nowrap">
       <div class="marquee-content inline-flex animate-marquee">
         {% for logo in alumni_logos %}
-        <img src="{% static logo.image %}" alt="{{ logo.name }}"
+        <img src="{{ logo.image.url }}" alt="{{ logo.name }}"
           class="h-16 sm:h-20 md:h-28 lg:h-32 object-contain rounded-lg mx-2" />
 
         {% endfor %}
         {% for logo in alumni_logos %}
-        <img src="{% static logo.image %}" alt="{{ logo.name }}"
+        <img src="{{ logo.image.url }}" alt="{{ logo.name }}"
           class="h-16 sm:h-20 md:h-28 lg:h-32 object-contain rounded-lg mx-2" />
 
         {% endfor %}
@@ -141,7 +141,7 @@
         </h2>
       </div>
 
-      <img src="{% static sig.sig_image %}" alt="{{ sig.name }}"
+      <img src="{{ sig.sig_image.url }}" alt="{{ sig.name }}"
         class="rounded-lg mb-4 max-h-[20rem] sm:max-h-[28rem] lg:max-h-[32rem] object-contain mx-auto">
 
     </div>
@@ -157,11 +157,11 @@
       {% for society in societies_linked_to_sig %}
       <a href="{{ society.url }}">
         {% if society.dark_image %}
-        <img src="{% static society.image %}" class="p-4 h-20 light-logo sm:h-20 lg:h-40 inline">
-        <img src="{% static society.dark_image %}" class="p-4 h-20 sm:h-20 dark-logo lg:h-40 inline">
+        <img src="{{ society.image.url }}" class="p-4 h-20 light-logo sm:h-20 lg:h-40 inline">
+        <img src="{{ society.dark_image.url }}" class="p-4 h-20 sm:h-20 dark-logo lg:h-40 inline">
 
         {% else %}
-        <img src="{% static society.image %}" class="p-4 h-20 sm:h-20 lg:h-40 inline">
+        <img src="{{ society.image.url }}" class="p-4 h-20 sm:h-20 lg:h-40 inline">
         {% endif %}
       </a>
       {% empty %}
