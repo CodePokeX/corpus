@@ -93,7 +93,12 @@
             <div
               class="carousel-card w-full max-w-md dark:bg-slate-700 rounded-lg shadow-xl overflow-hidden hover:shadow-2xl dark:hover:shadow-indigo-900 dark:hover:shadow-xl transition-all duration-300 transform hover:scale-105">
 
-              <img src="{{ event.thumbnail.url }}" alt="{{ event.name }}" class="w-full h-80 object-fill">
+              {% if event.thumbnail %}
+                  <img src="{{ event.thumbnail.url }}" alt="{{ event.name }}" class="w-full h-80 object-fill">
+                {% else %}
+                  <img src="{% static 'img/ieee-nitk.png' %}" alt="{{ event.name }}" class="w-full h-80 object-fill">
+              {% endif %}
+
 
               <div class="p-6 space-y-3">
                 <h3 class="text-xl font-semibold dark:text-white mb-1">{{ event.name }}</h3>
@@ -151,9 +156,9 @@
   <div class="px-6 text-center mt-10 py-8 ">
     <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold  dark:text-white leading-tight">Societies</h2>
   </div>
-  <section class="hero min-h-[30vh] min-w-screen ">
+  <section class="hero min-h-[30vh] min-w-screen pb-12 sm:pb-16">
 
-    <div class="flex flex-col lg:flex-row gap-20 justify-between mx-auto items-center">
+    <div class="flex flex-col lg:flex-row gap-8 lg:gap-20 justify-between mx-auto items-center">
       {% for society in societies_linked_to_sig %}
       <a href="{{ society.url }}">
         {% if society.dark_image %}
